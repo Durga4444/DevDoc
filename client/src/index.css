@@ -1,0 +1,264 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom CSS Variables */
+:root {
+  --primary-50: #f0f7ff;
+  --primary-100: #d0e7ff;
+  --primary-500: #2563eb;
+  --primary-600: #1d4ed8;
+  --primary-700: #1e40af;
+  --accent: #fbbf24;
+}
+
+/* Dark mode variables */
+.dark {
+  --primary-50: #1e293b;
+  --primary-100: #334155;
+  --primary-500: #60a5fa;
+  --primary-600: #3b82f6;
+  --primary-700: #2563eb;
+  --accent: #fbbf24;
+}
+
+/* Base styles */
+body {
+  font-family: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #e0e7ff 0%, #f8fafc 100%);
+  min-height: 100vh;
+}
+
+.dark body {
+  background: linear-gradient(135deg, #101624 0%, #181f2f 100%);
+}
+
+/* Component styles */
+.btn-primary {
+  @apply bg-gradient-to-r from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
+}
+
+.btn-secondary {
+  @apply bg-white/80 dark:bg-gray-800/80 border border-primary-100 dark:border-gray-700 text-primary-700 dark:text-primary-300 font-semibold py-3 px-8 rounded-full shadow hover:bg-primary-50/80 dark:hover:bg-gray-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
+}
+
+.btn-danger {
+  @apply bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
+}
+
+.input {
+  @apply w-full px-5 py-3 border border-gray-300 dark:border-gray-700 rounded-2xl bg-white/80 dark:bg-gray-800/80 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-200 shadow-sm;
+  font-size: 1.05rem;
+}
+
+.card {
+  @apply rounded-3xl border border-gray-200 dark:border-gray-800 shadow-2xl p-8 backdrop-blur-md bg-white/70 dark:bg-gray-900/70 transition-all duration-300;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.12);
+}
+
+/* Sidebar responsive styles */
+.sidebar {
+  @apply fixed inset-y-0 left-0 z-50 w-64 bg-gradient-to-b from-primary-100 to-primary-50 dark:from-gray-900 dark:to-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out shadow-xl;
+}
+
+.sidebar-closed {
+  @apply -translate-x-full;
+}
+
+.sidebar-open {
+  @apply translate-x-0;
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    @apply relative transform-none;
+  }
+  
+  .sidebar-closed {
+    @apply translate-x-0;
+  }
+}
+
+/* Markdown styles */
+.markdown {
+  @apply prose prose-base max-w-none dark:prose-invert;
+}
+
+.markdown h1 {
+  @apply text-3xl font-bold mb-4;
+}
+
+.markdown h2 {
+  @apply text-2xl font-semibold mb-3;
+}
+
+.markdown h3 {
+  @apply text-xl font-medium mb-2;
+}
+
+.markdown p {
+  @apply mb-3;
+}
+
+.markdown ul, .markdown ol {
+  @apply mb-3 pl-6;
+}
+
+.markdown li {
+  @apply mb-1;
+}
+
+.markdown code {
+  @apply bg-primary-100 dark:bg-gray-700 px-2 py-1 rounded text-sm font-mono;
+}
+
+.markdown pre {
+  @apply bg-primary-50 dark:bg-gray-900 p-4 rounded-xl overflow-x-auto mb-3;
+}
+
+.markdown pre code {
+  @apply bg-transparent p-0;
+}
+
+.markdown blockquote {
+  @apply border-l-4 border-primary-200 dark:border-primary-700 pl-4 italic;
+}
+
+.markdown a {
+  @apply text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 underline;
+}
+
+/* Responsive utilities */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Focus styles for better accessibility */
+*:focus {
+  @apply outline-none;
+}
+
+*:focus-visible {
+  @apply ring-2 ring-primary-500 ring-offset-2 dark:ring-offset-gray-900;
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Sleek hover effects */
+.hover-lift {
+  @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl;
+}
+
+.hover-glow {
+  @apply transition-all duration-200 hover:shadow-lg hover:shadow-primary-200 dark:hover:shadow-primary-900;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-primary-100 dark:bg-gray-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-primary-200 dark:bg-gray-600;
+}
+
+/* Mobile-first responsive improvements */
+@media (max-width: 640px) {
+  .btn-primary, .btn-secondary, .btn-danger {
+    @apply py-2 px-4 text-base;
+  }
+  
+  .input {
+    @apply py-2 text-base;
+  }
+  
+  .card {
+    @apply p-4;
+  }
+}
+
+/* Tablet improvements */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .sidebar {
+    @apply w-72;
+  }
+}
+
+/* Large screen improvements */
+@media (min-width: 1025px) {
+  .sidebar {
+    @apply w-80;
+  }
+}
+
+/* Enhanced shadows and depth */
+.shadow-soft {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.dark .shadow-soft {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.shadow-medium {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.dark .shadow-medium {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.dark .card {
+  @apply bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-gray-800 shadow-2xl;
+  box-shadow: 0 8px 32px 0 rgba(0,0,0,0.45);
+}
+
+.dark .btn-primary {
+  @apply bg-gradient-to-r from-primary-700 to-primary-500 hover:from-primary-600 hover:to-primary-400 text-white font-bold shadow-lg;
+}
+
+.dark .btn-secondary {
+  @apply bg-gray-800/90 border-gray-700 text-primary-200 hover:bg-gray-700;
+}
+
+.dark .btn-danger {
+  @apply bg-gradient-to-r from-red-700 to-red-500 hover:from-red-600 hover:to-red-400 text-white font-bold shadow-lg;
+}
+
+.dark .input {
+  @apply bg-gray-900/90 border-gray-700 text-primary-100 placeholder-gray-500;
+}
+
+.dark .sidebar {
+  @apply bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 border-gray-800 shadow-2xl;
+}
+
+.dark .markdown {
+  @apply prose-invert prose-a:text-primary-400 prose-a:hover:text-primary-200 prose-code:bg-gray-800 prose-pre:bg-gray-900;
+} 
