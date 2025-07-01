@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: 'https://devdoc-rilu.onrender.com/api',
   timeout: 10000,
   // Do not set Content-Type here; set it per request
 })
