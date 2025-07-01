@@ -4,6 +4,7 @@ import { Plus, Filter } from 'lucide-react'
 import { useProjects } from '../contexts/ProjectContext'
 import ProjectCard from '../components/ProjectCard'
 import EmptyState from '../components/EmptyState'
+import { Button } from '../components/ui/button'
 
 const Dashboard = () => {
   const { projects, loading, searchQuery } = useProjects()
@@ -81,13 +82,12 @@ const Dashboard = () => {
             </p>
           </div>
           <div className="flex-shrink-0">
-            <Link
-              to="/create"
-              className="btn-primary inline-flex items-center px-10 py-4 text-lg font-bold shadow-xl hover:shadow-2xl transition-all duration-200 rounded-full"
-            >
-              <Plus size={24} className="mr-3" />
-              Create Project
-            </Link>
+            <Button asChild size="lg" className="text-lg font-bold shadow-xl hover:shadow-2xl transition-all duration-200 rounded-full px-10 py-4">
+              <Link to="/create">
+                <Plus size={24} className="mr-3" />
+                Create Project
+              </Link>
+            </Button>
           </div>
         </div>
       </div>
@@ -191,10 +191,12 @@ const Dashboard = () => {
             ? `No projects match your search for "${searchQuery}"`
             : "Get started by creating your first project"}
           action={
-            <Link to="/create" className="btn-primary px-10 py-4 text-lg font-bold rounded-full">
-              <Plus size={24} className="mr-3" />
-              Create Project
-            </Link>
+            <Button asChild size="lg" className="text-lg font-bold rounded-full px-10 py-4">
+              <Link to="/create">
+                <Plus size={24} className="mr-3" />
+                Create Project
+              </Link>
+            </Button>
           }
         />
       )}
