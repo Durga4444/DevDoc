@@ -152,20 +152,37 @@ The project uses ESLint for code linting. Run `npm run lint` in the client direc
 
 ## Deployment
 
-### Backend Deployment
+### Backend Deployment (Render)
 
-1. Set up a MongoDB database (MongoDB Atlas recommended)
-2. Deploy to your preferred platform (Heroku, Railway, etc.)
-3. Set environment variables:
-   - `MONGODB_URI`
-   - `NODE_ENV=production`
-   - `PORT` (if required by platform)
+1. **Provision a MongoDB database** (e.g., MongoDB Atlas).
+2. **Deploy the backend to Render:**
+   - Go to [Render](https://render.com/) and create a new Web Service from the `server/` directory.
+   - Set the build and start commands (Render auto-detects Node.js):
+     - Build Command: `npm install`
+     - Start Command: `npm start`
+   - Set the following environment variables in Render:
+     - `MONGODB_URI` (your MongoDB connection string)
+     - `NODE_ENV=production`
+     - `PORT` (Render sets this automatically)
+     - `MAX_FILE_SIZE` (optional, default is 10485760)
+     - `FRONTEND_URL` (your deployed Vercel frontend URL, e.g., `https://your-vercel-app.vercel.app`)
 
-### Frontend Deployment
+3. **Uploads:**
+   - The `/uploads` directory is used for file uploads. Render persists files during the lifetime of the instance, but for permanent storage, consider using a cloud storage service.
 
-1. Build the project: `npm run build`
-2. Deploy the `dist` folder to your preferred platform (Vercel, Netlify, etc.)
-3. Update the API base URL in `client/src/utils/api.js` if needed
+### Frontend Deployment (Vercel)
+
+1. **Deploy the frontend to Vercel:**
+   - Go to [Vercel](https://vercel.com/) and import the `client/` directory as a new project.
+   - Set the environment variable in Vercel:
+     - `VITE_API_URL` (your deployed Render backend URL, e.g., `https://your-render-backend.onrender.com/api`)
+   - Vercel will automatically detect the build command (`vite build`) and output directory (`dist`).
+
+2. **Update API URLs:**
+   - The frontend uses `VITE_API_URL` to connect to the backend. Make sure this is set correctly in your Vercel project settings.
+
+3. **Environment Variables Example:**
+   - See `client/.env.example` and `server/env.example` for required variables.
 
 ## Contributing
 
