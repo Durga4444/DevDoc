@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 
 // Security middleware
 app.use(helmet());
-
+app.set('trust proxy', 1)
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -24,9 +24,7 @@ app.use(limiter);
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.NODE_ENV === 'production' 
-    ? ['https://yourdomain.com'] 
-    : ['http://localhost:5173', 'http://localhost:3000'],
+  origin: ['*'],
   credentials: true
 }));
 
