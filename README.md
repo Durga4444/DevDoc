@@ -152,37 +152,48 @@ The project uses ESLint for code linting. Run `npm run lint` in the client direc
 
 ## Deployment
 
-### Backend Deployment (Render)
+### Fullstack Deployment on Render
 
 1. **Provision a MongoDB database** (e.g., MongoDB Atlas).
-2. **Deploy the backend to Render:**
+2. **Build the frontend:**
+   ```bash
+   cd client
+   npm install
+   npm run build
+   ```
+   This creates a `dist` folder in `client/`.
+3. **Copy the frontend build to the server directory:**
+   ```bash
+   cp -r client/dist server/
+   ```
+   (Or automate this in your build process.)
+4. **Deploy the backend to Render:**
    - Go to [Render](https://render.com/) and create a new Web Service from the `server/` directory.
-   - Set the build and start commands (Render auto-detects Node.js):
-     - Build Command: `npm install`
-     - Start Command: `npm start`
+   - Set the build command:
+     ```bash
+     cd ../client && npm install && npm run build && cd ../server && npm install && cp -r ../client/dist .
+     ```
+   - Set the start command:
+     ```bash
+     npm start
+     ```
    - Set the following environment variables in Render:
      - `MONGODB_URI` (your MongoDB connection string)
      - `NODE_ENV=production`
      - `PORT` (Render sets this automatically)
      - `MAX_FILE_SIZE` (optional, default is 10485760)
-     - `FRONTEND_URL` (your deployed Vercel frontend URL, e.g., `https://your-vercel-app.vercel.app`)
 
-3. **Uploads:**
+5. **Uploads:**
    - The `/uploads` directory is used for file uploads. Render persists files during the lifetime of the instance, but for permanent storage, consider using a cloud storage service.
 
-### Frontend Deployment (Vercel)
+6. **Accessing the App:**
+   - Your fullstack app will be available at the Render service URL. All frontend and API routes will work from this single domain.
 
-1. **Deploy the frontend to Vercel:**
-   - Go to [Vercel](https://vercel.com/) and import the `client/` directory as a new project.
-   - Set the environment variable in Vercel:
-     - `VITE_API_URL` (your deployed Render backend URL, e.g., `https://your-render-backend.onrender.com/api`)
-   - Vercel will automatically detect the build command (`vite build`) and output directory (`dist`).
-
-2. **Update API URLs:**
-   - The frontend uses `VITE_API_URL` to connect to the backend. Make sure this is set correctly in your Vercel project settings.
-
-3. **Environment Variables Example:**
-   - See `client/.env.example` and `server/env.example` for required variables.
+### Troubleshooting
+- If you see a blank page or 404 on refresh, ensure the Express server is serving `index.html` for all non-API, non-uploads routes.
+- If API requests fail, check the Network tab for the request URL and ensure the backend is running and accessible.
+- If you get CORS errors, ensure your frontend and backend are served from the same domain (which they are in this setup).
+- If you change environment variables, always redeploy the service.
 
 ## Contributing
 

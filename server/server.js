@@ -24,7 +24,7 @@ app.use(limiter);
 
 // CORS configuration
 app.use(cors({
-  origin: process.env.FRONTEND_URL?.split(',') || ['*'],
+  origin: true, // allow same-origin requests
   credentials: true
 }));
 
@@ -34,6 +34,10 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Static file serving for uploads
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Serve static files from the React frontend
+const clientBuildPath = path.join(__dirname, '../client/dist');
+app.use(express.static(clientBuildPath));
 
 // Routes
 app.use('/api/projects', projectRoutes);
@@ -47,6 +51,11 @@ app.get('/api/health', (req, res) => {
 // Root endpoint for Render health check and root requests
 app.get('/', (req, res) => {
   res.send('DevDoc API is running');
+});
+
+// SPA fallback: serve index.html for any unknown route (except API and uploads)
+app.get(/^\/(?!api|uploads).*/, (req, res) => {
+  res.sendFile(path.join(clientBuildPath, 'index.html'));
 });
 
 // Error handling middleware
