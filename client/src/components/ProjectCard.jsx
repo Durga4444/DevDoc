@@ -1,8 +1,35 @@
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Calendar, Tag, FileText, Code, Link as LinkIcon } from 'lucide-react'
-import { Card, CardContent } from "../components/ui/card";
+import { Card, CardContent } from "../components/ui/card"
 
-const ProjectCard = ({ project }) => {
+// Text highlighting component
+const HighlightedText = ({ text, searchQuery }) => {
+  if (!searchQuery || !text) {
+    return <span>{text}</span>
+  }
+
+  const parts = text.split(new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'))
+  
+  return (
+    <span>
+      {parts.map((part, index) => {
+        const isMatch = part.toLowerCase() === searchQuery.toLowerCase()
+        return (
+          <span
+            key={index}
+            className={isMatch ? 'bg-yellow-200 dark:bg-yellow-600 font-medium rounded px-1' : ''}
+          >
+            {part}
+          </span>
+        )
+      })}
+    </span>
+  )
+}
+
+const ProjectCard = ({ project, searchQuery = '' }) => {
+  const navigate = useNavigate()
+
   const formatDate = (dateString) => {
     const date = new Date(dateString)
     const now = new Date()
@@ -15,10 +42,18 @@ const ProjectCard = ({ project }) => {
     return date.toLocaleDateString()
   }
 
+  // **THIS IS THE KEY FUNCTION - handles navigation with search query**
+  const handleProjectClick = (e) => {
+    e.preventDefault() // Prevent default Link behavior
+    navigate(`/project/${project._id}`, {
+      state: { searchQuery }
+    })
+  }
+
   return (
-    <Link
-      to={`/project/${project._id}`}
-      className="group block focus:outline-none focus:ring-2 focus:ring-primary-400 rounded-3xl transition-all duration-200"
+    <div
+      onClick={handleProjectClick}
+      className="group block focus:outline-none focus:ring-2 focus:ring-primary-400 rounded-3xl transition-all duration-200 cursor-pointer"
     >
       <Card className="p-8 bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-none rounded-3xl shadow-2xl hover:shadow-3xl hover:-translate-y-2 transition-all duration-300">
         <CardContent className="p-0">
@@ -26,15 +61,27 @@ const ProjectCard = ({ project }) => {
           <div className="flex items-start justify-between mb-6">
             <div className="flex-1 min-w-0">
               <h3 className="text-2xl font-extrabold text-gray-900 dark:text-white truncate group-hover:text-primary-600 transition-colors duration-200 drop-shadow-lg">
-                {project.name}
+                <HighlightedText text={project.name} searchQuery={searchQuery} />
               </h3>
               {project.description && (
                 <p className="text-base text-gray-600 dark:text-gray-400 mt-3 line-clamp-2 leading-relaxed">
-                  {project.description}
+                  <HighlightedText text={project.description} searchQuery={searchQuery} />
                 </p>
               )}
             </div>
           </div>
+
+          {/* Search Match Preview */}
+          {searchQuery && project.matchedContent && (
+            <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-2xl border border-yellow-200 dark:border-yellow-800 shadow-inner">
+              <div className="text-xs text-yellow-800 dark:text-yellow-200 font-bold mb-2 uppercase tracking-wide">
+                Found in {project.matchedField || 'notes'}:
+              </div>
+              <div className="text-sm text-gray-700 dark:text-gray-300 italic">
+                "<HighlightedText text={project.matchedContent} searchQuery={searchQuery} />"
+              </div>
+            </div>
+          )}
 
           {/* Tags */}
           {project.tags.length > 0 && (
@@ -45,7 +92,7 @@ const ProjectCard = ({ project }) => {
                   className="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-primary-100/80 text-primary-700 dark:bg-primary-900/80 dark:text-primary-300 shadow ring-1 ring-primary-200 dark:ring-primary-800 group-hover:bg-primary-200 group-hover:text-primary-800 dark:group-hover:bg-primary-800 dark:group-hover:text-primary-100 transition-colors duration-200"
                 >
                   <Tag size={14} className="mr-2" />
-                  {tag}
+                  <HighlightedText text={tag} searchQuery={searchQuery} />
                 </span>
               ))}
               {project.tags.length > 3 && (
@@ -78,10 +125,19 @@ const ProjectCard = ({ project }) => {
               <span className="sm:hidden">{formatDate(project.updatedAt).split(' ')[0]}</span>
             </div>
           </div>
+
+          {/* Search Query Indicator */}
+          {searchQuery && (
+            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+              <div className="text-xs text-gray-500 dark:text-gray-400 italic">
+                Click to view with "{searchQuery}" highlighted
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
-    </Link>
+    </div>
   )
 }
 
-export default ProjectCard 
+export default ProjectCard

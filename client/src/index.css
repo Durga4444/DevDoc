@@ -363,3 +363,9 @@ body {
     @apply bg-background text-foreground;
   }
 } 
+
+mark {
+  background-color: #fef08a; /* yellow-200 */
+  padding: 2px 4px;
+  border-radius: 3px;
+}

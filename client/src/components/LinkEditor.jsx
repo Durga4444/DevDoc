@@ -11,7 +11,7 @@ const LinkEditor = ({ project, onProjectUpdate }) => {
 
   const handleEdit = (link) => {
     setEditingId(link._id)
-    setForm({ title: link.title, url: link.url })
+    setForm ({ title: link.title, url: link.url })
   }
 
   const handleSave = async (linkId) => {

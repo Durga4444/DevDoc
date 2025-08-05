@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { ArrowLeft, Edit, Save, X, Plus, Trash2, ExternalLink, Download, FileText, Code, Link as LinkIcon, Share2, Copy } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import { useProjects } from '../contexts/ProjectContext'
@@ -8,10 +8,94 @@ import LinkEditor from '../components/LinkEditor'
 import FileUpload from '../components/FileUpload'
 import ConfirmationModal from '../components/ConfirmationModal'
 import { useDebounce } from '../hooks/useDebounce'
+import ShareButton from '../components/ShareButton'
+// Text highlighting component
+const HighlightedText = ({ text, searchQuery }) => {
+  if (!searchQuery || !text) {
+    return <span>{text}</span>
+  }
+
+  const parts = text.split(new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'))
+  
+  return (
+    <span>
+      {parts.map((part, index) => {
+        const isMatch = part.toLowerCase() === searchQuery.toLowerCase()
+        return (
+          <span
+            key={index}
+            className={isMatch ? 'bg-yellow-500 dark:bg-yellow-500 font-medium rounded px-1' : ''}
+          >
+            {part}
+          </span>
+        )
+      })}
+    </span>
+  )
+}
+
+// Enhanced textarea with highlighting overlay
+const HighlightedTextarea = ({ value, onChange, searchQuery, className, ...props }) => {
+  const textareaRef = useRef(null)
+  const highlightRef = useRef(null)
+
+  const handleScroll = () => {
+    if (highlightRef.current && textareaRef.current) {
+      highlightRef.current.scrollTop = textareaRef.current.scrollTop
+      highlightRef.current.scrollLeft = textareaRef.current.scrollLeft
+    }
+  }
+
+  const renderHighlightedContent = () => {
+    if (!searchQuery || !value) {
+      return value
+    }
+
+    const parts = value.split(new RegExp(`(${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'))
+    
+    return parts.map((part, index) => {
+      const isMatch = part.toLowerCase() === searchQuery.toLowerCase()
+      if (isMatch) {
+        return `<mark class="bg-yellow-400 dark:bg-yellow-500 font-medium rounded px-1">${part}</mark>`
+      }
+      return part
+    }).join('')
+  }
+
+  return (
+    <div className="relative">
+      {/* Highlighting overlay */}
+      <div
+        ref={highlightRef}
+        className={`absolute inset-0 pointer-events-none overflow-hidden whitespace-pre-wrap font-mono text-sm ${className} text-transparent`}
+        style={{
+          padding: '0.75rem',
+        //  border: '1px solid transparent',
+          lineHeight: '1.5',
+          wordWrap: 'break-word'
+        }}
+        dangerouslySetInnerHTML={{
+          __html: renderHighlightedContent()
+        }}
+      />
+      
+      {/* Actual textarea */}
+      <textarea
+        ref={textareaRef}
+        value={value}
+        onChange={onChange}
+        onScroll={handleScroll}
+        className={`${className}`}
+        {...props}
+      />
+    </div>
+  )
+}
 
 const ProjectView = () => {
   const { id } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const { getProject, updateProject, deleteProject, setLastProjectId } = useProjects()
   
   const [project, setProject] = useState(null)
@@ -19,8 +103,6 @@ const ProjectView = () => {
   const [editing, setEditing] = useState(false)
   const [activeTab, setActiveTab] = useState('notes')
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-  
-  // Form state
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -28,11 +110,22 @@ const ProjectView = () => {
     notes: ''
   })
   const [newTag, setNewTag] = useState('')
-  
-  // Auto-save for notes
   const [notes, setNotes] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
   const debouncedNotes = useDebounce(notes, 1000)
   const autoSaveTimeoutRef = useRef(null)
+
+  // Extract search query from URL params or state
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search)
+    const query = urlParams.get('search') || location.state?.searchQuery || ''
+    setSearchQuery(query)
+    
+    // If there's a search query, automatically switch to notes tab
+    if (query && location.state?.searchQuery) {
+      setActiveTab('notes')
+    }
+  }, [location])
 
   useEffect(() => {
     loadProject()
@@ -55,7 +148,6 @@ const ProjectView = () => {
         }
       }, 1000)
     }
-
     return () => {
       if (autoSaveTimeoutRef.current) {
         clearTimeout(autoSaveTimeoutRef.current)
@@ -130,6 +222,12 @@ const ProjectView = () => {
     setProject(updatedProject)
   }
 
+  const clearSearch = () => {
+    setSearchQuery('')
+    // Remove search params from URL
+    navigate(location.pathname, { replace: true })
+  }
+
   if (loading) {
     return (
       <div className="p-4 sm:p-6">
@@ -169,7 +267,6 @@ const ProjectView = () => {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Header */}
       <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-4 sm:p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center">
@@ -206,7 +303,7 @@ const ProjectView = () => {
             ) : (
               <div className="flex items-center space-x-2 sm:space-x-4 flex-1 min-w-0">
                 <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white truncate">
-                  {project.name}
+                  <HighlightedText text={project.name} searchQuery={searchQuery} />
                 </h1>
                 <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
                   <button
@@ -228,18 +325,28 @@ const ProjectView = () => {
             )}
           </div>
           {/* Share Button */}
-          <button
-            className="btn-secondary flex items-center gap-2"
-            onClick={() => {
-              const url = `${window.location.origin}/public/${project._id}`
-              navigator.clipboard.writeText(url)
-            }}
-            title="Copy public link"
-          >
-            <Share2 size={16} />
-            Share
-          </button>
+         <ShareButton project={project} />
         </div>
+
+        {/* Search Query Display */}
+        {searchQuery && (
+          <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                  Searching for: "{searchQuery}"
+                </span>
+              </div>
+              <button
+                onClick={clearSearch}
+                className="text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-200"
+                title="Clear search"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Project Info */}
         {editing ? (
@@ -286,7 +393,7 @@ const ProjectView = () => {
                       key={tag}
                       className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-100 text-primary-700 dark:bg-primary-900 dark:text-primary-300"
                     >
-                      {tag}
+                      <HighlightedText text={tag} searchQuery={searchQuery} />
                       <button
                         type="button"
                         onClick={() => handleRemoveTag(tag)}
@@ -304,7 +411,7 @@ const ProjectView = () => {
           <div className="space-y-2">
             {project.description && (
               <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
-                {project.description}
+                <HighlightedText text={project.description} searchQuery={searchQuery} />
               </p>
             )}
             {project.tags.length > 0 && (
@@ -314,7 +421,7 @@ const ProjectView = () => {
                     key={tag}
                     className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
                   >
-                    {tag}
+                    <HighlightedText text={tag} searchQuery={searchQuery} />
                   </span>
                 ))}
               </div>
@@ -353,16 +460,22 @@ const ProjectView = () => {
             <div className="flex items-center justify-between">
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">
                 Project Notes
+                {searchQuery && (
+                  <span className="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">
+                    (Highlighting "{searchQuery}")
+                  </span>
+                )}
               </h3>
               <div className="text-sm text-gray-500 dark:text-gray-400">
                 Auto-saves as you type
               </div>
             </div>
             <div>
-              <textarea
+              <HighlightedTextarea
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                className="input h-64 sm:h-80 resize-none font-mono text-sm mb-4 max-w-full overflow-x-auto"
+                searchQuery={searchQuery}
+                className="input h-64 sm:h-80 font-mono text-sm mb-4 max-w-full overflow-x-auto"
                 placeholder="Write your notes here... (Markdown supported)"
               />
             </div>
@@ -374,6 +487,7 @@ const ProjectView = () => {
             <SnippetEditor 
               project={project} 
               onProjectUpdate={handleProjectUpdate}
+              searchQuery={searchQuery}
             />
           </div>
         )}
@@ -383,6 +497,7 @@ const ProjectView = () => {
             <LinkEditor 
               project={project} 
               onProjectUpdate={handleProjectUpdate}
+              searchQuery={searchQuery}
             />
           </div>
         )}
@@ -392,6 +507,7 @@ const ProjectView = () => {
             <FileUpload 
               project={project} 
               onProjectUpdate={handleProjectUpdate}
+              searchQuery={searchQuery}
             />
           </div>
         )}

@@ -1,22 +1,27 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Plus, Filter } from 'lucide-react'
+import { Plus, Filter, Search, X } from 'lucide-react'
 import { useProjects } from '../contexts/ProjectContext'
 import ProjectCard from '../components/ProjectCard'
 import EmptyState from '../components/EmptyState'
 import { Button } from '../components/ui/button'
 
 const Dashboard = () => {
-  const { projects, loading, searchQuery } = useProjects()
+  const { projects, loading, searchQuery, searchProjects, fetchProjects } = useProjects()
+  const [localSearchQuery, setLocalSearchQuery] = useState('')
   const [sortBy, setSortBy] = useState('updatedAt')
   const [sortOrder, setSortOrder] = useState('desc')
   const [filterTags, setFilterTags] = useState([])
   const [showFilters, setShowFilters] = useState(false)
 
+  // Initialize local search query from context
+  useEffect(() => {
+    setLocalSearchQuery(searchQuery || '')
+  }, [searchQuery])
+
   // Get all unique tags from projects
   const allTags = [...new Set(projects.flatMap(project => project.tags))].sort()
 
-  // Filter and sort projects
   const filteredProjects = projects
     .filter(project => {
       if (filterTags.length === 0) return true
@@ -25,12 +30,10 @@ const Dashboard = () => {
     .sort((a, b) => {
       let aValue = a[sortBy]
       let bValue = b[sortBy]
-
       if (sortBy === 'updatedAt' || sortBy === 'createdAt') {
         aValue = new Date(aValue)
         bValue = new Date(bValue)
       }
-
       if (sortOrder === 'asc') {
         return aValue > bValue ? 1 : -1
       } else {
@@ -52,13 +55,28 @@ const Dashboard = () => {
     setSortOrder('desc')
   }
 
+  // Handle search functionality
+  const handleSearch = (query) => {
+    setLocalSearchQuery(query)
+    if (query.trim()) {
+      searchProjects(query)
+    } else {
+      fetchProjects() // Load all projects when search is cleared
+    }
+  }
+
+  const clearSearch = () => {
+    setLocalSearchQuery('')
+    fetchProjects()
+  }
+
   if (loading) {
     return (
       <div className="p-4 sm:p-6">
         <div className="animate-pulse space-y-4">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4"></div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+            {[1,2,3,4,5,6].map((i) => (
               <div key={i} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
             ))}
           </div>
@@ -74,11 +92,11 @@ const Dashboard = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-10">
           <div className="flex-1">
             <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 dark:text-white mb-3 tracking-tight drop-shadow-lg">
-              {searchQuery ? `Search Results for "${searchQuery}"` : 'My Projects'}
+              {localSearchQuery ? `Search Results for "${localSearchQuery}"` : 'My Projects'}
             </h1>
             <p className="text-lg sm:text-xl text-gray-600 dark:text-gray-400">
               {filteredProjects.length} project{filteredProjects.length !== 1 ? 's' : ''}
-              {searchQuery && ` found for "${searchQuery}"`}
+              {localSearchQuery && ` found for "${localSearchQuery}"`}
             </p>
           </div>
           <div className="flex-shrink-0">
@@ -89,6 +107,20 @@ const Dashboard = () => {
               </Link>
             </Button>
           </div>
+        </div>
+      </div>
+
+      {/* Search Bar */}
+      <div className="mb-14">
+        <div className="relative max-w-2xl mx-auto">
+          <div className="relative">
+            <Search className="absolute left-6 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500" size={24} />
+           
+
+          </div>
+          
+          {/* Search Results Info */}
+          
         </div>
       </div>
 
@@ -181,14 +213,18 @@ const Dashboard = () => {
       {filteredProjects.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
           {filteredProjects.map((project) => (
-            <ProjectCard key={project._id} project={project} />
+            <ProjectCard 
+              key={project._id} 
+              project={project} 
+              searchQuery={localSearchQuery} // Pass the search query here
+            />
           ))}
         </div>
       ) : (
         <EmptyState 
-          title={searchQuery ? "No projects found" : "No projects yet"}
-          description={searchQuery 
-            ? `No projects match your search for "${searchQuery}"`
+          title={localSearchQuery ? "No projects found" : "No projects yet"}
+          description={localSearchQuery 
+            ? `No projects match your search for "${localSearchQuery}"`
             : "Get started by creating your first project"}
           action={
             <Button asChild size="lg" className="text-lg font-bold rounded-full px-10 py-4">
@@ -204,4 +240,4 @@ const Dashboard = () => {
   )
 }
 
-export default Dashboard 
+export default Dashboard

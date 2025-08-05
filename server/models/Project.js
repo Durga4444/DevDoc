@@ -64,10 +64,11 @@ const fileSchema = new mongoose.Schema({
   }
 });
 
+//This creates a schema that defines what each project document will look like in the database.
 const projectSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'User',//This enables Mongoose population — a feature that fetches the entire user document from the users collection when you want it.
     required: true
   },
   name: {
@@ -103,7 +104,6 @@ const projectSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Text index for search functionality
 projectSchema.index({ 
   name: 'text', 
   description: 'text', 
@@ -118,30 +118,23 @@ projectSchema.index({
   }
 });
 
-// Virtual for formatted date
 projectSchema.virtual('formattedUpdatedAt').get(function() {
   return this.updatedAt.toLocaleDateString();
 });
 
-// Pre-save middleware to update lastAccessed
 projectSchema.pre('save', function(next) {
   this.lastAccessed = new Date();
   next();
 });
 
-// Static method to search projects using MongoDB text search
-projectSchema.statics.searchProjects = async function(query) {
+projectSchema.statics.searchProjects = async function(query) { //static method 
   if (!query || query.trim() === '') {
     return this.find().sort({ updatedAt: -1 });
   }
-  
-  // Use MongoDB text search
   const searchResults = await this.find(
     { $text: { $search: query } },
     { score: { $meta: "textScore" } }
   ).sort({ score: { $meta: "textScore" }, updatedAt: -1 });
-  
-  // If no text search results, fall back to regex search
   if (searchResults.length === 0) {
     const regex = new RegExp(query, 'i');
     return this.find({
@@ -153,20 +146,17 @@ projectSchema.statics.searchProjects = async function(query) {
       ]
     }).sort({ updatedAt: -1 });
   }
-  
   return searchResults;
 };
 
-// Instance method to add tag
-projectSchema.methods.addTag = function(tag) {
+projectSchema.methods.addTag = function(tag) { //instance method 
   if (!this.tags.includes(tag.toLowerCase())) {
     this.tags.push(tag.toLowerCase());
   }
   return this.save();
 };
 
-// Instance method to remove tag
-projectSchema.methods.removeTag = function(tag) {
+projectSchema.methods.removeTag = function(tag) { //instance method 
   this.tags = this.tags.filter(t => t !== tag.toLowerCase());
   return this.save();
 };

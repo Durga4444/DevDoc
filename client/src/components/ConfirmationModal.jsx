@@ -22,7 +22,7 @@ const ConfirmationModal = ({
 }) => {
   if (!isOpen) return null
 
-  // Map confirmVariant to shadcn Button variants
+
   const getButtonVariant = () => {
     switch (confirmVariant) {
       case 'danger':

@@ -1,0 +1,208 @@
+Why React?
+
+ I chose React because it just makes building UIs way easier and cleaner. Instead of writing tons of JavaScript to manually update the DOM, React lets me break everything into small components that manage their own state.
+It's super helpful when the app starts growing — like in one of my projects, the UI was getting really messy, and moving to React made it much more organized.
+Plus, it’s flexible. I’m not forced to use anything specific — I can pick the router I want, use Context or Redux for state, and even style however I like. That level of control really helped me build things the way I wanted.
+
+ What is React? (Simple, Human Explanation)
+React is a JavaScript library that helps you build user interfaces — basically the part of the app users see and interact with. Instead of manually updating the page with JavaScript, React lets you create reusable components that automatically update when data changes.
+So if something in the app changes, like a user types something or clicks a button, React takes care of updating the right part of the screen — and it does this super efficiently using something called a virtual DOM.\
+
+React and React DOM
+I'm importing React so I can use JSX and build components, and ReactDOM/client so I can actually render my app inside the browser’s HTML. It’s like React builds the UI virtually, and ReactDOM is what plugs that into the real webpage.  
+
+React Router 
+
+“I want to use React Router — a library that lets me handle navigation between pages in my React app — without reloading the whole page.”
+ BrowserRouter
+This is the main wrapper that enables routing in your app. It watches the URL (like /home or /about) and lets you load different components based on that.
+I use BrowserRouter to enable routing, Routes to define all my paths, and Route to map each URL to a component.
+Navigate helps with redirects — like when someone goes to a page that doesn’t exist, or if they’re not logged in and I want to send them to the login page.
+ Real-life analogy:
+Think of <BrowserRouter> as the GPS system in your app.
+Think of <Routes> as the traffic control in your app.
+It watches the URL and decides which screen (component) should be displayed.
+The <Route> is like saying, “if I’m here, show this.”
+But without the GPS (i.e., BrowserRouter), the app doesn’t even know where it is — so it can't show anything correctly.
+
+React.StrictMode> is a development tool that helps me catch bugs early. It doesn’t affect the UI or performance, but gives warnings for bad practices, deprecated features, or unexpected side effects — especially around things like useEffect. It’s like a safety net while coding.
+
+ What is React Context?
+React Context is a way to share data globally across components, without passing props manually at every level.
+✅ That’s where Context comes in.
+You can wrap your app in a context provider, and then any component — no matter how deep — can access that data directly.
+
+FETCH 
+fetch() is a built-in JavaScript function that helps us make network requests — like getting data from a server, sending login details, etc.
+So basically:
+“Hey server, give me the user data,”
+and when it replies, you handle the result.
+fetch('https://api.example.com/user')
+  .then(res => res.json())
+  .then(data => console.log(data))
+
+AXIOS -
+Axios is a library in JavaScript that helps us talk to a backend server using HTTP requests (like GET, POST, PUT, DELETE). 
+“A better version of fetch() — with more features.”
+axios is just a library (a tool we install) that makes doing these requests easier and cleaner than fetch
+import axios from 'axios';
+axios.get('https://api.example.com/user')
+  .then(res => console.log(res.data));
+
+
+What's async / await?
+async makes a function return a promise
+
+await pauses the code inside the function until the promise is done 
+
+"async makes a function return a promise. await pauses the code inside that function until the promise resolves — making asynchronous code behave in a readable, step-by-step way."
+"Interceptor" = a middleman that can edit the request before it goes or handle response after it comes
+
+
+| 🏷 Header Name    | 🤔 Why it's needed                                                 |
+| ----------------- | ------------------------------------------------------------------ |
+| `Content-Type`    | Tells server **what format** your data is in (`json`, `form`, etc) |
+| `Authorization`   | Sends **login token** (JWT/Bearer) to prove you're logged in       |
+| `Accept`          | Tells server **what format** you want back (JSON, HTML, etc)       |
+| `X-Custom-Header` | Any **custom rule** you and backend agree on                       |
+| `withCredentials` | (not header but config) — tells server to include **cookies**      |
+
+👉 What is config?
+config is the Axios request configuration object that contains everything about the outgoing HTTP request — like:
+| 🔧 Key    | 😎 Meaning                                                 |
+| --------- | ---------------------------------------------------------- |
+| `url`     | The endpoint you're hitting, like `/login`                 |
+| `method`  | GET, POST, PUT, DELETE, etc.                               |
+| `headers` | Request headers like `Content-Type`, `Authorization`, etc. |
+| `data`    | Body you are sending (e.g., `{ email, password }`)         |
+| `params`  | For query strings like `?page=2`                           |
+| `timeout` | How long to wait before it gives up                        |
+| `baseURL` | The base URL you gave in `axios.create()`                  |
+
+| What                | With Interceptors        | Without Interceptors                           |
+| ------------------- | ------------------------ | ---------------------------------------------- |
+| Token auto-attached | Yes, added once globally | No, you have to pass in every request manually |
+| Cleaner code        | ✅                        | ❌ More repetitive                              |
+| Easier to maintain  | ✅ One place to manage    | ❌ Harder if you have many APIs                 |
+
+
+
+What is Express?
+
+Express is like the messenger or waiter between your frontend (React) and your database (MongoDB).
+Express is the actual server that:
+Listens for requests from the frontend (like React, Postman, etc.)
+Sends back responses (success or error)
+Handles those requests (like register, login, send message, etc.)
+Talks to the database (like MongoDB)
+
+
+(req, res) are the standard parameters in Express route handlers:router.post('/register', async (req, res) => {
+
+| Param | Meaning                                                                                  |
+| ----- | ---------------------------------------------------------------------------------------- |
+| `req` | **Request** object → contains data coming **from the client** (like body, headers, etc.) |
+| `res` | **Response** object → used to send **response back to the client**                       |
+
+
+Node.js Alone = More Work
+You'd need to do everything manually, like:
+Parse incoming request body (e.g., JSON)
+Handle routes like /register, /login
+Set response headers
+Handle errors
+Connect to MongoDB, etc.
+
+Example using Node.js without Express:
+const http = require('http');
+
+const server = http.createServer((req, res) => {
+  if (req.method === 'GET' && req.url === '/') {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+    res.end('Hello from raw Node.js!');
+  }
+});
+server.listen(3000, () => console.log('Server running'));
+
+with express:
+const express = require('express');
+const app = express();
+app.get('/', (req, res) => {
+  res.send('Hello from Express!');
+});
+app.listen(3000, () => console.log('Server running'));
+
+
+MULTER 
+When a form includes a file (<input type="file" />), it sends data as multipart/form-data — not JSON or application/x-www-form-urlencoded.
+Express doesn't understand multipart/form-data by default, so you need multer to:
+parse the form
+extract file(s)
+optionally save them to disk or memory
+
+What is a "text index"?
+A text index lets MongoDB:
+Break text into individual words.
+Ignore common words like "a", "the", etc.
+Perform case-insensitive search.
+Rank matches by relevance if weights are added.
+
+CORS
+"We use cors to allow our frontend (running on a different origin like localhost:3000) to securely communicate with our backend (like localhost:5000) during development or even in production if they're on different domains. Without it, the browser blocks requests due to same-origin policy."
+
+
+express-rate-limit is like a guard:
+| Attacker Type        | What They Try   | What Rate Limiting Does        |
+| -------------------- | --------------- | ------------------------------ |
+| Hacker (brute-force) | Guess passwords | Blocks repeated login attempts |
+| Spammer              | Auto-fill forms | Limits form submissions        |
+| DoS bot              | Overload server | Stops flood of requests        |
+
+
+What is Middleware?
+In Express, middleware is just a function that has access to:
+(req, res, next)
+It can:
+Read or change the request (req)
+End the response (res)
+Call next() to pass control to the next middleware
+
+app.use() is used to mount middleware in an Express app.
+
+So for every request:
+➡️ CORS → Helmet → RateLimiter → /api Router → Final Response
+
+
+Client Request
+     ↓
+──────────────[ Express Server ]──────────────
+     ↓
+[ app.use(cors) ]            ✅ sets CORS headers
+     ↓
+[ app.use(helmet) ]          ✅ sets security headers
+     ↓
+[ app.use(rateLimit) ]       ⛔ or ✅ block too many requests
+     ↓
+[ app.use('/api', router) ]  ✅ pass to /api routes if matched
+     ↓
+[ router.get('/users') ]     ✅ matches GET /api/users
+     ↓
+[ Your Controller Logic ]    ✅ get data, send response
+     ↓
+Response sent to Client
+
+
+
+Express creates a stack of functions (middlewares + routes).
+
+
+
+When a request hits, Express:
+Starts from the top of the stack (first app.use or app.get).
+Runs each middleware in order.
+If a middleware calls next(), it continues to the next one.
+If it sends a response or throws an error, it stops the flow.
+
+urlendoded 
+helmet 
+urlparser 

@@ -5,7 +5,6 @@ const auth = require('../middleware/authMiddleware');
 
 const router = express.Router();
 
-// Register
 router.post('/register', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -25,7 +24,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -47,7 +45,6 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Get current user
 router.get('/me', auth, async (req, res) => {
   res.json({ id: req.user._id, email: req.user.email });
 });

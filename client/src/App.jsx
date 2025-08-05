@@ -12,11 +12,9 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Simulate initial loading
     const timer = setTimeout(() => {
       setIsLoading(false)
     }, 1000)
-
     return () => clearTimeout(timer)
   }, [])
 
@@ -39,9 +37,9 @@ function App() {
             <Route path="/" element={<Layout />}>
               <Route index element={<Dashboard />} />
               <Route path="create" element={<CreateProject />} />
-              <Route path="project/:id" element={<ProjectView />} />
+             <Route path="project/:id" element={<ProjectView />} />
             </Route>
-            <Route path="/public/:projectId" element={<PublicProject />} />
+          //  <Route path="/public/:projectId" element={<PublicProject />} />
           </Routes>
         </div>
       </ProjectProvider>

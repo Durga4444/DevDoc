@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-  email: {
+  email: {  //shape or user document in MongoDB
     type: String,
     required: true,
     unique: true,
@@ -19,10 +19,10 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
-userSchema.pre('save', async function(next) {
+userSchema.pre('save', async function(next) {   //middleware
   if (!this.isModified('password')) return next();
   try {
-    const salt = await bcrypt.genSalt(10);
+    const salt = await bcrypt.genSalt(4);
     this.password = await bcrypt.hash(this.password, salt);
     next();
   } catch (err) {
@@ -30,7 +30,7 @@ userSchema.pre('save', async function(next) {
   }
 });
 
-userSchema.methods.comparePassword = function(candidatePassword) {
+userSchema.methods.comparePassword = function(candidatePassword) { //instance method
   return bcrypt.compare(candidatePassword, this.password);
 };
 
