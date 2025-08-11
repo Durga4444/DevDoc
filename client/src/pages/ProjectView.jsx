@@ -62,15 +62,16 @@ const HighlightedTextarea = ({ value, onChange, searchQuery, className, ...props
     }).join('')
   }
 
-  return (
-    <div className="relative">
-      {/* Highlighting overlay */}
+return (
+  <div className="relative">
+    {/* Highlighting overlay */}
+    {searchQuery && (
       <div
         ref={highlightRef}
         className={`absolute inset-0 pointer-events-none overflow-hidden whitespace-pre-wrap font-mono text-sm ${className} text-transparent`}
         style={{
           padding: '0.75rem',
-        //  border: '1px solid transparent',
+          border: '1px solid transparent',
           lineHeight: '1.5',
           wordWrap: 'break-word'
         }}
@@ -78,18 +79,20 @@ const HighlightedTextarea = ({ value, onChange, searchQuery, className, ...props
           __html: renderHighlightedContent()
         }}
       />
-      
-      {/* Actual textarea */}
-      <textarea
-        ref={textareaRef}
-        value={value}
-        onChange={onChange}
-        onScroll={handleScroll}
-        className={`${className}`}
-        {...props}
-      />
-    </div>
-  )
+    )}
+
+    {/* Actual textarea */}
+    <textarea
+      ref={textareaRef}
+      value={value}
+      onChange={onChange}
+      onScroll={handleScroll}
+      className={`${className}`}
+      {...props}
+    />
+  </div>
+)
+
 }
 
 const ProjectView = () => {

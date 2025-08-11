@@ -46,7 +46,7 @@ const PublicProject = () => {
         </div>
       )}
       <div className="mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+        <h2 className="text-lg font-semibold  dark:text-white mb-2 flex items-center gap-2">
           <FileText size={18} /> Notes
         </h2>
         <div

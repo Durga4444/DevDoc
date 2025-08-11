@@ -18,10 +18,11 @@ const SnippetEditor = ({ project, onProjectUpdate }) => {
   const [adding, setAdding] = useState(false)
   const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    Prism.highlightAll()
-  }, [project.snippets, editingId])
+  // useEffect(() => {
+  //   Prism.highlightAll()
+  // }, [project.snippets, editingId])
 
+  
   const handleEdit = (snippet) => {
     setEditingId(snippet._id)
     setForm({ title: snippet.title, code: snippet.code, language: snippet.language || 'javascript' })

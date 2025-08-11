@@ -5,7 +5,6 @@ const FileUpload = ({ project, onProjectUpdate }) => {
   const [uploading, setUploading] = useState(false)
   const [isDragActive, setIsDragActive] = useState(false)
 
-  // Mock functions - replace with your actual useProjects hooks
   const uploadFile = async (projectId, file) => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -50,7 +49,6 @@ const FileUpload = ({ project, onProjectUpdate }) => {
     setUploading(false)
   }
 
-  // Manual drag and drop handlers
   const handleDrop = (e) => {
     e.preventDefault()
     setIsDragActive(false)
@@ -65,7 +63,6 @@ const FileUpload = ({ project, onProjectUpdate }) => {
 
   const handleDragLeave = (e) => {
     e.preventDefault()
-    // Only set to false if we're leaving the dropzone completely
     if (!e.currentTarget.contains(e.relatedTarget)) {
       setIsDragActive(false)
     }
@@ -76,7 +73,6 @@ const FileUpload = ({ project, onProjectUpdate }) => {
     if (files.length > 0) {
       onDrop(files)
     }
-    // Reset the input so the same file can be selected again
     e.target.value = ''
   }
 
@@ -106,12 +102,10 @@ const FileUpload = ({ project, onProjectUpdate }) => {
   const handleDownload = (file) => {
     console.log('Downloading file:', file)
     console.log('File path:', file.path)
-    
-    // Try the download
-    const downloadUrl = `http://localhost:5000${file.path}`
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'
+    const downloadUrl = `${API_BASE_URL}${file.path}`
     console.log('Download URL:', downloadUrl)
     
-    // Open in new tab for download
     window.open(downloadUrl, '_blank')
   }
 

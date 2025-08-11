@@ -67,95 +67,8 @@ const ShareButton = ({ project }) => {
     setIsOpen(false)
   }
 
-  const shareViaLinkedIn = () => {
-    const url = encodeURIComponent(publicUrl)
-    const title = encodeURIComponent(project.name)
-    const summary = encodeURIComponent(project.description || '')
-    window.open(
-      `https://www.linkedin.com/sharing/share-offsite/?url=${url}&title=${title}&summary=${summary}`,
-      '_blank'
-    )
-    setIsOpen(false)
-  }
 
-  const exportAsMarkdown = () => {
-    const markdown = generateMarkdown(project)
-    const blob = new Blob([markdown], { type: 'text/markdown' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${project.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-    setIsOpen(false)
-    showToastMessage('Project exported as Markdown!')
-  }
 
-  const exportAsJSON = () => {
-    const json = JSON.stringify(project, null, 2)
-    const blob = new Blob([json], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${project.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.json`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
-    setIsOpen(false)
-    showToastMessage('Project exported as JSON!')
-  }
-
-  const generateMarkdown = (project) => {
-    let markdown = `# ${project.name}\n\n`
-    
-    if (project.description) {
-      markdown += `${project.description}\n\n`
-    }
-
-    if (project.tags && project.tags.length > 0) {
-      markdown += `**Tags:** ${project.tags.map(tag => `\`${tag}\``).join(', ')}\n\n`
-    }
-
-    if (project.notes) {
-      markdown += `## Notes\n\n${project.notes}\n\n`
-    }
-
-    if (project.snippets && project.snippets.length > 0) {
-      markdown += `## Code Snippets\n\n`
-      project.snippets.forEach((snippet, index) => {
-        markdown += `### ${snippet.title}\n\n`
-        if (snippet.description) {
-          markdown += `${snippet.description}\n\n`
-        }
-        markdown += `\`\`\`${snippet.language || ''}\n${snippet.code}\n\`\`\`\n\n`
-      })
-    }
-
-    if (project.links && project.links.length > 0) {
-      markdown += `## Links\n\n`
-      project.links.forEach(link => {
-        markdown += `- [${link.title}](${link.url})`
-        if (link.description) {
-          markdown += ` - ${link.description}`
-        }
-        markdown += `\n`
-      })
-      markdown += `\n`
-    }
-
-    if (project.files && project.files.length > 0) {
-      markdown += `## Files\n\n`
-      project.files.forEach(file => {
-        markdown += `- ${file.originalName || file.filename} (${(file.size / 1024).toFixed(1)} KB)\n`
-      })
-    }
-
-    markdown += `\n---\n*Generated from DevDoc*`
-    return markdown
-  }
 
   const useNativeShare = async () => {
     if (navigator.share) {
@@ -276,41 +189,10 @@ const ShareButton = ({ project }) => {
                 <span className="flex-1 text-left">Twitter</span>
               </button>
 
-              <button
-                onClick={shareViaLinkedIn}
-                className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <div className="w-4 h-4 bg-blue-600 rounded flex items-center justify-center">
-                  <span className="text-white text-xs font-bold">in</span>
-                </div>
-                <span className="flex-1 text-left">LinkedIn</span>
-              </button>
+
             </div>
 
-            <hr className="border-gray-200 dark:border-gray-600 my-2" />
-
-            {/* Export Section */}
-            <div className="space-y-1">
-              <h4 className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide px-2">
-                Export
-              </h4>
-              
-              <button
-                onClick={exportAsMarkdown}
-                className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <Download size={16} className="text-orange-500" />
-                <span className="flex-1 text-left">Export as Markdown</span>
-              </button>
-
-              <button
-                onClick={exportAsJSON}
-                className="w-full flex items-center gap-3 px-3 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <Download size={16} className="text-yellow-500" />
-                <span className="flex-1 text-left">Export as JSON</span>
-              </button>
-            </div>
+            <hr className="border-gray-200 dark:border-gray-600 my-2" />          
           </div>
         </div>
       )}
