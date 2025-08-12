@@ -21,7 +21,7 @@ app.use(limiter);
 app.use(cors({
   //origin: true,
   credentials: true,
-   origin: ["http://localhost:5173", "https://dev-doc-b6kj.vercel.app","https://dev-doc-omdm.vercel.app","dev-doc-neqg.vercel.app"], 
+   origin: ["http://localhost:5173", "https://dev-doc-b6kj.vercel.app","https://dev-doc-omdm.vercel.app","dev-doc-neqg.vercel.app","dev-doc-tzdo.vercel.app"], 
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
