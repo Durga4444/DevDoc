@@ -102,7 +102,8 @@ const FileUpload = ({ project, onProjectUpdate }) => {
   const handleDownload = (file) => {
     console.log('Downloading file:', file)
     console.log('File path:', file.path)
-    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL 
+    
     const downloadUrl = `${API_BASE_URL}${file.path}`
     console.log('Download URL:', downloadUrl)
     
