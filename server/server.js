@@ -20,8 +20,8 @@ app.use(limiter);
 
 app.use(cors({
   //origin: true,
-  //credentials: true
-   origin: "http://localhost:5173", // allow your frontend
+  credentials: true,
+  origin:"http://localhost:5173",
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
