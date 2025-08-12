@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const api = axios.create({
-  // baseURL:"http://localhost:5000/api", // your backend route proxy (e.g. http://localhost:5000/api if not proxied)
+ // baseURL:"http://localhost:5000/api", // your backend route proxy (e.g. http://localhost:5000/api if not proxied)
   baseURL:"https://project-4c2u.onrender.com/api",
  timeout: 10000,
 
